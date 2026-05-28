@@ -1,0 +1,1325 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#F9F8F6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Ledger">
+  <title>Ledger Shift Tracker</title>
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAB/ElEQVR42u3cwQ2AIBBFwa1jG7Fsm7EWIyfpgUSEzRxeA5vh9kNk5itVKRxBQEtAS0BLQAtoCWgJaAloCWgBLQEtAS0BLQEtoCWgJaAloCWgBbQEtAS0BLQEtICWgJaAloCWgBbQEtAS0BLQEtACWgJaAloCWkA7hICWgJaAloAW0BLQEtBf1p5bgwENNNBAAw000EADDbSABhpooIEGGmiggQYaaKCBFtBAAw30lqDtH2w5gBbQQAtooAU00EADLaCBFtBAC2igBTTQQAMtoIEW0EALaKAFNNBAAy2ggRbQQAtooAU00EADvXrXeUwJaKCBBhpooIEGGmiggQYaaKCBBhpooIEGGmiggQYaaKCBBhropUH759mWA2iggQYaaKCBBhpooIEGGmiggQYaaKCBBhpooIEGGmiggQbalkNAAy2ggRbQQAMNtIAGWkADLaCBFtBAAw20gAZaQAMtoIEW0EADDbSABlpAAy2ggRbQQAMNtIAGWkADLaCBFtCq97iBFtBAAw000EADDTTQQAtooAU00EADDTTQQAMNNNACWgJaAloCWgJaQEtAS0BLQEtAC2gJaAloCWgJaAEtAS0BLQEtAS2gJaAloCWgJaAFtAS0BLQEtIB2BAEtAS0BLQEtoCWgJaAloCWgBbQEtAS0BLQEtICWgJb+rgOE/LrZ8Dam3AAAAABJRU5ErkJggg==">
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Ledger Shift Tracker","short_name":"Ledger","start_url":".","display":"standalone","background_color":"#F9F8F6","theme_color":"#F9F8F6","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 512 512%27%3E%3Crect width=%27512%27 height=%27512%27 rx=%27112%27 fill=%27%231A1A1A%27/%3E%3Cpath d=%27M145 132h222v30H178v92h155v30H178v67h199v30H145z%27 fill=%27%23F9F8F6%27/%3E%3Cpath d=%27M318 222h72v30h-72z%27 fill=%27%23D4AF37%27/%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}'>
+  <style>
+    :root {
+      --paper: #F9F8F6;
+      --ink: #1A1A1A;
+      --taupe: #EBE5DE;
+      --grey: #6C6863;
+      --gold: #D4AF37;
+      --white: #FFFFFF;
+      --line: rgba(26, 26, 26, .14);
+      --shade: 0 24px 70px rgba(42, 35, 28, .09);
+      --hair: inset 0 0 0 1px rgba(26, 26, 26, .08);
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      min-height: 100%;
+      background: var(--paper);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        linear-gradient(115deg, rgba(235, 229, 222, .65), transparent 38%),
+        linear-gradient(300deg, rgba(212, 175, 55, .08), transparent 34%),
+        var(--paper);
+      color: var(--ink);
+      letter-spacing: 0;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .shell {
+      width: min(100%, 560px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: max(24px, env(safe-area-inset-top)) 18px max(120px, env(safe-area-inset-bottom));
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 22px;
+      align-items: start;
+      padding: 20px 0 34px;
+    }
+
+    .kicker {
+      margin: 0 0 12px;
+      color: var(--grey);
+      font-size: 11px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 9ch;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(48px, 16vw, 84px);
+      font-weight: 400;
+      line-height: .88;
+      letter-spacing: 0;
+    }
+
+    .date-mark {
+      justify-self: end;
+      width: 76px;
+      min-height: 96px;
+      padding: 16px 12px;
+      border: 1px solid var(--ink);
+      background: rgba(249, 248, 246, .76);
+      box-shadow: var(--shade);
+      text-align: center;
+    }
+
+    .date-mark span {
+      display: block;
+      color: var(--grey);
+      font-size: 10px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .date-mark strong {
+      display: block;
+      margin-top: 6px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 34px;
+      font-weight: 400;
+    }
+
+    .tabs {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      padding: 8px;
+      margin: 0 -2px 28px;
+      background: rgba(249, 248, 246, .86);
+      border: 1px solid var(--line);
+      box-shadow: var(--hair);
+      backdrop-filter: blur(24px);
+    }
+
+    .tab {
+      min-height: 42px;
+      border: 0;
+      background: transparent;
+      color: var(--grey);
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .tab[aria-selected="true"] {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    main {
+      display: grid;
+      gap: 24px;
+    }
+
+    .panel {
+      display: none;
+      animation: arrive 900ms cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    .panel.active {
+      display: grid;
+      gap: 22px;
+    }
+
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+      margin: 8px 0 2px;
+    }
+
+    h2, h3 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: 31px;
+      line-height: 1;
+    }
+
+    h3 {
+      font-size: 22px;
+    }
+
+    .meta {
+      color: var(--grey);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .card {
+      padding: 22px;
+      background: rgba(255, 255, 255, .38);
+      border: 1px solid var(--line);
+      box-shadow: var(--shade), var(--hair);
+    }
+
+    .form {
+      display: grid;
+      gap: 18px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: var(--grey);
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 48px;
+      border: 0;
+      border-bottom: 1px solid rgba(26, 26, 26, .28);
+      border-radius: 0;
+      background: transparent;
+      outline: 0;
+      color: var(--ink);
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+
+    textarea {
+      min-height: 76px;
+      padding-top: 10px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-bottom-color: var(--gold);
+      box-shadow: 0 1px 0 var(--gold);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .btn {
+      display: inline-flex;
+      min-height: 46px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 18px;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      transition: transform 450ms ease, background 450ms ease, color 450ms ease, border-color 450ms ease;
+    }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--ink);
+      border-color: rgba(26, 26, 26, .35);
+    }
+
+    .btn.icon {
+      width: 46px;
+      padding: 0;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 14px;
+    }
+
+    .metric {
+      min-height: 108px;
+      padding: 18px;
+      background: var(--taupe);
+      box-shadow: var(--hair);
+    }
+
+    .metric:nth-child(1) {
+      grid-row: span 2;
+      min-height: 230px;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--grey);
+      font-size: 10px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .metric:nth-child(1) strong {
+      font-size: 54px;
+    }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .item:first-child {
+      border-top: 1px solid var(--line);
+    }
+
+    .item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .item small {
+      color: var(--grey);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .amount {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 22px;
+      white-space: nowrap;
+    }
+
+    .mini-actions {
+      display: flex;
+      justify-content: end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .mini {
+      min-width: 34px;
+      min-height: 34px;
+      border: 1px solid rgba(26, 26, 26, .2);
+      background: transparent;
+      color: var(--grey);
+    }
+
+    .empty {
+      padding: 32px 18px;
+      border: 1px solid var(--line);
+      color: var(--grey);
+      font-size: 14px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .preview {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .preview img {
+      width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      box-shadow: var(--hair);
+    }
+
+    .file-chip {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 11px;
+      background: var(--taupe);
+      color: var(--grey);
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .pdf-frame {
+      width: 100%;
+      height: 260px;
+      border: 1px solid var(--line);
+      background: var(--taupe);
+    }
+
+    .bars {
+      display: grid;
+      gap: 14px;
+    }
+
+    .bar-line {
+      display: grid;
+      gap: 7px;
+    }
+
+    .bar-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--grey);
+      font-size: 12px;
+    }
+
+    .bar-track {
+      height: 8px;
+      background: var(--taupe);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: var(--ink);
+      transform-origin: left;
+      animation: fill 1500ms cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    @keyframes fill {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    .quiet {
+      color: var(--grey);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .calculated {
+      display: grid;
+      gap: 6px;
+      padding: 18px;
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .calculated span {
+      color: rgba(249, 248, 246, .68);
+      font-size: 10px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .calculated strong {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 40px;
+      font-weight: 400;
+    }
+
+    .print-report {
+      display: none;
+    }
+
+    @media (max-width: 420px) {
+      .shell { padding-inline: 14px; }
+      .tabs { grid-template-columns: repeat(2, 1fr); }
+      .grid-2 { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .metric:nth-child(1) { grid-row: auto; min-height: 180px; }
+      .section-title { grid-template-columns: 1fr; }
+      .amount { font-size: 20px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .shell { display: none; }
+      .print-report {
+        display: block;
+        padding: 32px;
+        color: #111;
+        font-family: Arial, sans-serif;
+      }
+      .print-report h1,
+      .print-report h2 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 400;
+      }
+      .print-report table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0 30px;
+        font-size: 12px;
+      }
+      .print-report th,
+      .print-report td {
+        border-bottom: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .print-report img {
+        max-width: 220px;
+        max-height: 220px;
+        object-fit: contain;
+      }
+      .print-report embed {
+        width: 100%;
+        min-height: 480px;
+        border: 1px solid #ccc;
+      }
+      .print-report .receipt {
+        break-inside: avoid;
+        margin-bottom: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <p class="kicker">private work ledger</p>
+        <h1>Shift Ledger</h1>
+      </div>
+      <div class="date-mark" aria-label="Today">
+        <span id="monthMark">May</span>
+        <strong id="dayMark">28</strong>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="App sections">
+      <button class="tab" data-tab="shifts" aria-selected="true">Shifts</button>
+      <button class="tab" data-tab="expenses" aria-selected="false">Expenses</button>
+      <button class="tab" data-tab="summary" aria-selected="false">Summary</button>
+      <button class="tab" data-tab="settings" aria-selected="false">Settings</button>
+    </nav>
+
+    <main>
+      <section class="panel active" id="shifts">
+        <div class="summary-grid" aria-live="polite">
+          <div class="metric">
+            <span>This week</span>
+            <strong id="weekTotal">$0</strong>
+          </div>
+          <div class="metric">
+            <span>This month</span>
+            <strong id="monthTotal">$0</strong>
+          </div>
+          <div class="metric">
+            <span>Year to date</span>
+            <strong id="ytdTotal">$0</strong>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">
+            <h2>New shift</h2>
+            <p class="meta">Choose a place, date range, and pay rate.</p>
+          </div>
+          <form class="form" id="shiftForm">
+            <label>
+              Location worked
+              <input id="shiftLocation" list="locationOptions" autocomplete="organization" required placeholder="The atelier">
+              <datalist id="locationOptions"></datalist>
+            </label>
+            <div class="grid-2">
+              <label>
+                Start date
+                <input id="shiftStart" type="date" required>
+              </label>
+              <label>
+                End date
+                <input id="shiftEnd" type="date" required>
+              </label>
+            </div>
+            <div class="grid-2">
+              <label>
+                Days worked
+                <input id="shiftDays" type="number" min="0.25" step="0.25" required placeholder="5">
+              </label>
+              <label>
+                Pay rate
+                <input id="shiftRate" type="number" min="0" step="0.01" required placeholder="25.00">
+              </label>
+            </div>
+            <div class="calculated">
+              <span>Calculated total</span>
+              <strong id="shiftCalculated">$0</strong>
+            </div>
+            <div class="button-row">
+              <button class="btn" type="submit">Save shift</button>
+              <button class="btn secondary" type="button" id="clearShift">Clear</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <div class="section-title">
+            <h2>Recent work</h2>
+            <button class="btn secondary" type="button" id="exportShifts">Export CSV</button>
+          </div>
+          <div class="list" id="shiftList"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="expenses">
+        <div class="summary-grid">
+          <div class="metric">
+            <span>Total expenses</span>
+            <strong id="expenseTotal">$0</strong>
+          </div>
+          <div class="metric">
+            <span>This month</span>
+            <strong id="expenseMonth">$0</strong>
+          </div>
+          <div class="metric">
+            <span>Categories</span>
+            <strong id="expenseCategoryCount">0</strong>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">
+            <h2>New expense</h2>
+            <p class="meta">Receipt images and PDFs remain in this app on this device.</p>
+          </div>
+          <form class="form" id="expenseForm">
+            <label>
+              Expense
+              <input id="expenseName" required placeholder="Parking, supplies, mileage">
+            </label>
+            <div class="grid-2">
+              <label>
+                Category
+                <input id="expenseCategory" list="categoryOptions" required placeholder="Travel">
+                <datalist id="categoryOptions"></datalist>
+              </label>
+              <label>
+                Amount
+                <input id="expenseAmount" type="number" min="0" step="0.01" required placeholder="18.50">
+              </label>
+            </div>
+            <label>
+              Date
+              <input id="expenseDate" type="date" required>
+            </label>
+            <label>
+              Receipt image or PDF
+              <input id="expenseFile" type="file" accept="image/*,application/pdf">
+            </label>
+            <div class="preview" id="expensePreview"></div>
+            <label>
+              Notes
+              <textarea id="expenseNotes" placeholder="Optional details"></textarea>
+            </label>
+            <div class="button-row">
+              <button class="btn" type="submit">Save expense</button>
+              <button class="btn secondary" type="button" id="clearExpense">Clear</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <div class="section-title">
+            <h2>Expenses</h2>
+            <button class="btn secondary" type="button" id="exportExpenses">Export report</button>
+          </div>
+          <div class="list" id="expenseList"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="summary">
+        <div class="card">
+          <div class="section-title">
+            <h2>Year view</h2>
+            <label>
+              Year
+              <select id="summaryYear"></select>
+            </label>
+          </div>
+          <div class="bars" id="monthlyBars"></div>
+        </div>
+
+        <div class="card">
+          <div class="section-title">
+            <h2>Expense categories</h2>
+            <p class="meta" id="categoryMeta">Year to date</p>
+          </div>
+          <div class="bars" id="categoryBars"></div>
+        </div>
+      </section>
+
+      <section class="panel" id="settings">
+        <div class="card">
+          <div class="section-title">
+            <h2>Rates</h2>
+            <p class="meta">Link a workplace with a default daily rate.</p>
+          </div>
+          <form class="form" id="rateForm">
+            <label>
+              Place
+              <input id="rateLocation" list="locationOptions" required placeholder="The studio">
+            </label>
+            <label>
+              Default rate
+              <input id="rateAmount" type="number" min="0" step="0.01" required placeholder="250.00">
+            </label>
+            <div class="button-row">
+              <button class="btn" type="submit">Save rate</button>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <div class="section-title">
+            <h2>Saved places</h2>
+            <p class="meta">Used for future location menus.</p>
+          </div>
+          <div class="list" id="rateList"></div>
+        </div>
+
+        <div class="card">
+          <h3>Device storage</h3>
+          <p class="quiet">Everything is stored locally in this browser. Add it to your iPhone Home Screen for an app-like experience.</p>
+          <div class="button-row">
+            <button class="btn secondary" type="button" id="backupData">Download backup</button>
+            <button class="btn secondary" type="button" id="restoreButton">Restore backup</button>
+            <input id="restoreFile" type="file" accept="application/json" hidden>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <section class="print-report" id="printReport"></section>
+
+  <script>
+    const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+    const dateFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" });
+    const monthFmt = new Intl.DateTimeFormat("en-US", { month: "long" });
+    const today = new Date();
+    const todayISO = toISO(today);
+    const storeKey = "editorial-shift-ledger-v1";
+    const initialState = { shifts: [], expenses: [], places: [], rates: {} };
+    let state = { ...initialState };
+    let pendingFile = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    $("monthMark").textContent = today.toLocaleString("en-US", { month: "short" });
+    $("dayMark").textContent = String(today.getDate()).padStart(2, "0");
+    $("shiftStart").value = todayISO;
+    $("shiftEnd").value = todayISO;
+    $("expenseDate").value = todayISO;
+
+    document.querySelectorAll(".tab").forEach((button) => {
+      button.addEventListener("click", () => setTab(button.dataset.tab));
+    });
+
+    $("shiftLocation").addEventListener("input", applyRateForLocation);
+    $("shiftDays").addEventListener("input", updateShiftCalculated);
+    $("shiftRate").addEventListener("input", updateShiftCalculated);
+    $("shiftStart").addEventListener("change", suggestDays);
+    $("shiftEnd").addEventListener("change", suggestDays);
+
+    $("shiftForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const location = $("shiftLocation").value.trim();
+      const days = Number($("shiftDays").value);
+      const rate = Number($("shiftRate").value);
+      if (!location || !days || !rate) return;
+      state.shifts.unshift({
+        id: crypto.randomUUID(),
+        location,
+        start: $("shiftStart").value,
+        end: $("shiftEnd").value,
+        days,
+        rate,
+        total: roundMoney(days * rate),
+        createdAt: new Date().toISOString()
+      });
+      rememberPlace(location);
+      saveState();
+      clearShiftForm();
+      render();
+    });
+
+    $("clearShift").addEventListener("click", clearShiftForm);
+
+    $("rateForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const location = $("rateLocation").value.trim();
+      const rate = Number($("rateAmount").value);
+      if (!location || !rate) return;
+      state.rates[normalize(location)] = { location, rate };
+      rememberPlace(location);
+      saveState();
+      $("rateForm").reset();
+      render();
+    });
+
+    $("expenseFile").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      pendingFile = file ? await readFile(file) : null;
+      renderExpensePreview();
+    });
+
+    $("expenseForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const name = $("expenseName").value.trim();
+      const category = $("expenseCategory").value.trim();
+      const amount = Number($("expenseAmount").value);
+      if (!name || !category || !amount) return;
+      state.expenses.unshift({
+        id: crypto.randomUUID(),
+        name,
+        category,
+        amount: roundMoney(amount),
+        date: $("expenseDate").value,
+        notes: $("expenseNotes").value.trim(),
+        file: pendingFile,
+        createdAt: new Date().toISOString()
+      });
+      saveState();
+      clearExpenseForm();
+      render();
+    });
+
+    $("clearExpense").addEventListener("click", clearExpenseForm);
+    $("summaryYear").addEventListener("change", renderSummaries);
+    $("exportShifts").addEventListener("click", exportShifts);
+    $("exportExpenses").addEventListener("click", exportExpenseReport);
+    $("backupData").addEventListener("click", downloadBackup);
+    $("restoreButton").addEventListener("click", () => $("restoreFile").click());
+    $("restoreFile").addEventListener("change", restoreBackup);
+
+    function setTab(tabId) {
+      document.querySelectorAll(".tab").forEach((button) => {
+        button.setAttribute("aria-selected", String(button.dataset.tab === tabId));
+      });
+      document.querySelectorAll(".panel").forEach((panel) => {
+        panel.classList.toggle("active", panel.id === tabId);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function loadState() {
+      const saved = await readLedgerDb();
+      if (saved) return { ...initialState, ...saved };
+      try {
+        const legacy = JSON.parse(localStorage.getItem(storeKey));
+        if (legacy) return { ...initialState, ...legacy };
+      } catch (error) {
+        console.warn("Could not load local ledger", error);
+      }
+      return { ...initialState };
+    }
+
+    function saveState() {
+      writeLedgerDb(state);
+      try {
+        const lightCopy = {
+          ...state,
+          expenses: state.expenses.map((expense) => ({ ...expense, file: expense.file ? { name: expense.file.name, type: expense.file.type } : null }))
+        };
+        localStorage.setItem(storeKey, JSON.stringify(lightCopy));
+      } catch (error) {
+        console.warn("Could not write fallback ledger", error);
+      }
+    }
+
+    function openLedgerDb() {
+      return new Promise((resolve, reject) => {
+        if (!("indexedDB" in window)) {
+          reject(new Error("IndexedDB unavailable"));
+          return;
+        }
+        const request = indexedDB.open("editorial-shift-ledger", 1);
+        request.onupgradeneeded = () => request.result.createObjectStore("state");
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function readLedgerDb() {
+      try {
+        const db = await openLedgerDb();
+        return await new Promise((resolve, reject) => {
+          const transaction = db.transaction("state", "readonly");
+          const request = transaction.objectStore("state").get("ledger");
+          request.onsuccess = () => resolve(request.result || null);
+          request.onerror = () => reject(request.error);
+        });
+      } catch (error) {
+        return null;
+      }
+    }
+
+    async function writeLedgerDb(value) {
+      try {
+        const db = await openLedgerDb();
+        await new Promise((resolve, reject) => {
+          const transaction = db.transaction("state", "readwrite");
+          transaction.objectStore("state").put(value, "ledger");
+          transaction.oncomplete = resolve;
+          transaction.onerror = () => reject(transaction.error);
+        });
+      } catch (error) {
+        console.warn("Could not save local ledger", error);
+      }
+    }
+
+    function render() {
+      renderOptions();
+      renderShifts();
+      renderRates();
+      renderExpenses();
+      renderYearOptions();
+      renderSummaries();
+      updateShiftCalculated();
+    }
+
+    function renderOptions() {
+      const places = uniquePlaces();
+      $("locationOptions").innerHTML = places.map((place) => `<option value="${escapeHtml(place)}"></option>`).join("");
+      const categories = [...new Set(state.expenses.map((expense) => expense.category).filter(Boolean))].sort();
+      $("categoryOptions").innerHTML = categories.map((category) => `<option value="${escapeHtml(category)}"></option>`).join("");
+    }
+
+    function renderShifts() {
+      const week = getWeekRange(today);
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+      const yearStart = new Date(today.getFullYear(), 0, 1);
+      $("weekTotal").textContent = money.format(totalShiftsBetween(week.start, week.end));
+      $("monthTotal").textContent = money.format(totalShiftsBetween(monthStart, today));
+      $("ytdTotal").textContent = money.format(totalShiftsBetween(yearStart, today));
+      $("shiftList").innerHTML = state.shifts.length ? state.shifts.map(shiftItem).join("") : empty("No shifts yet. Your next entry will begin the ledger.");
+      document.querySelectorAll("[data-delete-shift]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.shifts = state.shifts.filter((shift) => shift.id !== button.dataset.deleteShift);
+          saveState();
+          render();
+        });
+      });
+    }
+
+    function shiftItem(shift) {
+      return `
+        <article class="item">
+          <div>
+            <strong>${escapeHtml(shift.location)}</strong>
+            <small>${formatDate(shift.start)} to ${formatDate(shift.end)} · ${shift.days} day${shift.days === 1 ? "" : "s"} · ${money.format(shift.rate)} rate</small>
+            <div class="mini-actions">
+              <button class="mini" type="button" data-delete-shift="${shift.id}" aria-label="Delete shift">×</button>
+            </div>
+          </div>
+          <div class="amount">${money.format(shift.total)}</div>
+        </article>
+      `;
+    }
+
+    function renderRates() {
+      const rates = Object.values(state.rates).sort((a, b) => a.location.localeCompare(b.location));
+      $("rateList").innerHTML = rates.length ? rates.map((rate) => `
+        <article class="item">
+          <div>
+            <strong>${escapeHtml(rate.location)}</strong>
+            <small>Default daily rate</small>
+          </div>
+          <div>
+            <div class="amount">${money.format(rate.rate)}</div>
+            <div class="mini-actions">
+              <button class="mini" type="button" data-delete-rate="${normalize(rate.location)}" aria-label="Delete rate">×</button>
+            </div>
+          </div>
+        </article>
+      `).join("") : empty("Save a workplace rate and new shifts will fill it in automatically.");
+      document.querySelectorAll("[data-delete-rate]").forEach((button) => {
+        button.addEventListener("click", () => {
+          delete state.rates[button.dataset.deleteRate];
+          saveState();
+          render();
+        });
+      });
+    }
+
+    function renderExpenses() {
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+      const categories = new Set(state.expenses.map((expense) => expense.category).filter(Boolean));
+      $("expenseTotal").textContent = money.format(state.expenses.reduce((sum, expense) => sum + expense.amount, 0));
+      $("expenseMonth").textContent = money.format(totalExpensesBetween(monthStart, today));
+      $("expenseCategoryCount").textContent = String(categories.size);
+      $("expenseList").innerHTML = state.expenses.length ? state.expenses.map(expenseItem).join("") : empty("No expenses saved yet.");
+      document.querySelectorAll("[data-delete-expense]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.expenses = state.expenses.filter((expense) => expense.id !== button.dataset.deleteExpense);
+          saveState();
+          render();
+        });
+      });
+    }
+
+    function expenseItem(expense) {
+      const receipt = expense.file ? renderReceipt(expense.file, true) : "";
+      return `
+        <article class="item">
+          <div>
+            <strong>${escapeHtml(expense.name)}</strong>
+            <small>${escapeHtml(expense.category)} · ${formatDate(expense.date)}${expense.notes ? " · " + escapeHtml(expense.notes) : ""}</small>
+            ${receipt}
+            <div class="mini-actions">
+              <button class="mini" type="button" data-delete-expense="${expense.id}" aria-label="Delete expense">×</button>
+            </div>
+          </div>
+          <div class="amount">${money.format(expense.amount)}</div>
+        </article>
+      `;
+    }
+
+    function renderExpensePreview() {
+      $("expensePreview").innerHTML = pendingFile ? renderReceipt(pendingFile, false) : "";
+    }
+
+    function renderReceipt(file, compact) {
+      if (!file.data) {
+        return `<div class="preview"><span class="file-chip">Receipt saved as ${escapeHtml(file.name || "a local file")}</span></div>`;
+      }
+      if (file.type.startsWith("image/")) {
+        return `<div class="preview"><img src="${file.data}" alt="${escapeHtml(file.name)}"></div>`;
+      }
+      return `
+        <div class="preview">
+          ${compact ? "" : `<embed class="pdf-frame" src="${file.data}" type="application/pdf">`}
+          <a class="file-chip" href="${file.data}" target="_blank" rel="noopener">${compact ? "Open PDF" : "Attached PDF"} · ${escapeHtml(file.name)}</a>
+        </div>
+      `;
+    }
+
+    function renderYearOptions() {
+      const years = new Set([today.getFullYear(), ...state.shifts.map((shift) => new Date(shift.start + "T00:00:00").getFullYear())]);
+      const current = $("summaryYear").value || String(today.getFullYear());
+      $("summaryYear").innerHTML = [...years].sort((a, b) => b - a).map((year) => `<option value="${year}">${year}</option>`).join("");
+      $("summaryYear").value = years.has(Number(current)) ? current : String(today.getFullYear());
+    }
+
+    function renderSummaries() {
+      const year = Number($("summaryYear").value) || today.getFullYear();
+      const monthly = Array.from({ length: 12 }, (_, index) => ({
+        label: monthFmt.format(new Date(year, index, 1)),
+        total: 0
+      }));
+      state.shifts.forEach((shift) => {
+        const date = new Date(shift.start + "T00:00:00");
+        if (date.getFullYear() === year) monthly[date.getMonth()].total += shift.total;
+      });
+      $("monthlyBars").innerHTML = renderBars(monthly, "No earnings recorded for this year.");
+
+      const categoryTotals = {};
+      state.expenses.forEach((expense) => {
+        const date = new Date(expense.date + "T00:00:00");
+        if (date.getFullYear() === year) categoryTotals[expense.category] = (categoryTotals[expense.category] || 0) + expense.amount;
+      });
+      const categories = Object.entries(categoryTotals).map(([label, total]) => ({ label, total })).sort((a, b) => b.total - a.total);
+      $("categoryMeta").textContent = `${year} total expenses by category`;
+      $("categoryBars").innerHTML = renderBars(categories, "No expenses recorded for this year.");
+    }
+
+    function renderBars(rows, emptyMessage) {
+      const meaningful = rows.filter((row) => row.total > 0);
+      if (!meaningful.length) return empty(emptyMessage);
+      const max = Math.max(...meaningful.map((row) => row.total));
+      return meaningful.map((row) => `
+        <div class="bar-line">
+          <div class="bar-top"><span>${escapeHtml(row.label)}</span><span>${money.format(row.total)}</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.max(3, (row.total / max) * 100)}%"></div></div>
+        </div>
+      `).join("");
+    }
+
+    function suggestDays() {
+      const start = $("shiftStart").value;
+      const end = $("shiftEnd").value;
+      if (!start || !end) return;
+      const startDate = new Date(start + "T00:00:00");
+      const endDate = new Date(end + "T00:00:00");
+      if (endDate < startDate) {
+        $("shiftEnd").value = start;
+        $("shiftDays").value = 1;
+      } else {
+        const days = Math.round((endDate - startDate) / 86400000) + 1;
+        $("shiftDays").value = days;
+      }
+      updateShiftCalculated();
+    }
+
+    function applyRateForLocation() {
+      const saved = state.rates[normalize($("shiftLocation").value)];
+      if (saved) $("shiftRate").value = saved.rate;
+      updateShiftCalculated();
+    }
+
+    function updateShiftCalculated() {
+      const total = roundMoney(Number($("shiftDays").value || 0) * Number($("shiftRate").value || 0));
+      $("shiftCalculated").textContent = money.format(total);
+    }
+
+    function clearShiftForm() {
+      $("shiftForm").reset();
+      $("shiftStart").value = todayISO;
+      $("shiftEnd").value = todayISO;
+      $("shiftDays").value = "";
+      updateShiftCalculated();
+    }
+
+    function clearExpenseForm() {
+      $("expenseForm").reset();
+      $("expenseDate").value = todayISO;
+      pendingFile = null;
+      renderExpensePreview();
+    }
+
+    function rememberPlace(location) {
+      const exists = state.places.some((place) => normalize(place) === normalize(location));
+      if (!exists) state.places.push(location);
+    }
+
+    function uniquePlaces() {
+      const fromRates = Object.values(state.rates).map((rate) => rate.location);
+      const fromShifts = state.shifts.map((shift) => shift.location);
+      return [...new Map([...state.places, ...fromRates, ...fromShifts].filter(Boolean).map((place) => [normalize(place), place])).values()].sort();
+    }
+
+    function totalShiftsBetween(start, end) {
+      return state.shifts.reduce((sum, shift) => {
+        const date = new Date(shift.start + "T00:00:00");
+        return date >= start && date <= end ? sum + shift.total : sum;
+      }, 0);
+    }
+
+    function totalExpensesBetween(start, end) {
+      return state.expenses.reduce((sum, expense) => {
+        const date = new Date(expense.date + "T00:00:00");
+        return date >= start && date <= end ? sum + expense.amount : sum;
+      }, 0);
+    }
+
+    function getWeekRange(date) {
+      const current = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const day = current.getDay();
+      const mondayOffset = day === 0 ? -6 : 1 - day;
+      const start = new Date(current);
+      start.setDate(current.getDate() + mondayOffset);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      return { start, end };
+    }
+
+    function exportShifts() {
+      const rows = [["Location", "Start", "End", "Days", "Rate", "Total"], ...state.shifts.map((shift) => [
+        shift.location, shift.start, shift.end, shift.days, shift.rate, shift.total
+      ])];
+      downloadText("shift-ledger.csv", rows.map((row) => row.map(csvCell).join(",")).join("\n"), "text/csv");
+    }
+
+    function exportExpenseReport() {
+      const categoryTotals = {};
+      state.expenses.forEach((expense) => {
+        categoryTotals[expense.category] = (categoryTotals[expense.category] || 0) + expense.amount;
+      });
+      const report = `
+        <h1>Expense Report</h1>
+        <p>Generated ${dateFmt.format(new Date())}</p>
+        <h2>Category totals</h2>
+        <table>
+          <thead><tr><th>Category</th><th>Total</th></tr></thead>
+          <tbody>${Object.entries(categoryTotals).map(([category, total]) => `<tr><td>${escapeHtml(category)}</td><td>${money.format(total)}</td></tr>`).join("")}</tbody>
+        </table>
+        <h2>Expenses</h2>
+        <table>
+          <thead><tr><th>Date</th><th>Expense</th><th>Category</th><th>Amount</th><th>Notes</th></tr></thead>
+          <tbody>${state.expenses.map((expense) => `<tr><td>${formatDate(expense.date)}</td><td>${escapeHtml(expense.name)}</td><td>${escapeHtml(expense.category)}</td><td>${money.format(expense.amount)}</td><td>${escapeHtml(expense.notes || "")}</td></tr>`).join("")}</tbody>
+        </table>
+        <h2>Receipts</h2>
+        ${state.expenses.map((expense) => `
+          <div class="receipt">
+            <h3>${escapeHtml(expense.name)} · ${money.format(expense.amount)}</h3>
+            <p>${escapeHtml(expense.category)} · ${formatDate(expense.date)}</p>
+            ${expense.file ? printableReceipt(expense.file) : "<p>No receipt attached.</p>"}
+          </div>
+        `).join("")}
+      `;
+      $("printReport").innerHTML = report;
+      window.print();
+    }
+
+    function printableReceipt(file) {
+      if (!file.data) return `<p>Receipt saved as ${escapeHtml(file.name || "a local file")}.</p>`;
+      if (file.type.startsWith("image/")) return `<img src="${file.data}" alt="${escapeHtml(file.name)}">`;
+      return `<embed src="${file.data}" type="application/pdf"><p>PDF receipt: ${escapeHtml(file.name)}</p>`;
+    }
+
+    function downloadBackup() {
+      downloadText(`shift-ledger-backup-${todayISO}.json`, JSON.stringify(state, null, 2), "application/json");
+    }
+
+    async function restoreBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        state = { shifts: [], expenses: [], places: [], rates: {}, ...parsed };
+        saveState();
+        render();
+      } catch (error) {
+        alert("That backup could not be restored.");
+      } finally {
+        event.target.value = "";
+      }
+    }
+
+    function readFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({ name: file.name, type: file.type || "application/octet-stream", data: reader.result });
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function downloadText(filename, text, type) {
+      const blob = new Blob([text], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function toISO(date) {
+      const offset = date.getTimezoneOffset();
+      return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 10);
+    }
+
+    function formatDate(value) {
+      return value ? dateFmt.format(new Date(value + "T00:00:00")) : "";
+    }
+
+    function normalize(value) {
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function roundMoney(value) {
+      return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+    }
+
+    function csvCell(value) {
+      return `"${String(value ?? "").replaceAll('"', '""')}"`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[char]);
+    }
+
+    function empty(message) {
+      return `<div class="empty">${escapeHtml(message)}</div>`;
+    }
+
+    if ("serviceWorker" in navigator) {
+      const sw = `
+        const cacheName = "ledger-pwa-v1";
+        self.addEventListener("install", event => {
+          event.waitUntil(caches.open(cacheName).then(cache => cache.addAll(["./"])));
+          self.skipWaiting();
+        });
+        self.addEventListener("fetch", event => {
+          event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
+        });
+      `;
+      navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw], { type: "text/javascript" }))).catch(() => {});
+    }
+
+    async function init() {
+      state = await loadState();
+      render();
+    }
+
+    init();
+  </script>
+</body>
+</html>

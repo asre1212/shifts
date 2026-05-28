@@ -755,6 +755,7 @@
           <div class="button-row">
             <button class="btn secondary" type="button" id="backupData">Download backup</button>
             <button class="btn secondary" type="button" id="restoreButton">Restore backup</button>
+            <button class="btn secondary" type="button" id="hardUpdate">Update app</button>
             <input id="restoreFile" type="file" accept="application/json" hidden>
           </div>
         </div>
@@ -863,6 +864,7 @@
     $("backupData").addEventListener("click", downloadBackup);
     $("restoreButton").addEventListener("click", () => $("restoreFile").click());
     $("restoreFile").addEventListener("change", restoreBackup);
+    $("hardUpdate").addEventListener("click", hardUpdateApp);
 
     function setTab(tabId) {
       document.querySelectorAll(".tab").forEach((button) => {
@@ -1247,6 +1249,26 @@
       } finally {
         event.target.value = "";
       }
+    }
+
+    async function hardUpdateApp() {
+      $("hardUpdate").textContent = "Updating";
+      $("hardUpdate").disabled = true;
+      try {
+        if ("serviceWorker" in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map((registration) => registration.unregister()));
+        }
+        if ("caches" in window) {
+          const names = await caches.keys();
+          await Promise.all(names.map((name) => caches.delete(name)));
+        }
+      } catch (error) {
+        console.warn("Could not clear app cache", error);
+      }
+      const url = new URL(window.location.href);
+      url.searchParams.set("update", Date.now().toString());
+      window.location.replace(url.toString());
     }
 
     function readFile(file) {
